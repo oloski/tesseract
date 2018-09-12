@@ -3,9 +3,10 @@ PREFIX qb: <http://purl.org/linked-data/cube#>
 PREFIX mes: <http://id.insee.fr/meta/mesure/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 
-SELECT ?s ?o  where {           
-    ?s a qb:DataSet.
-    OPTIONAL{ ?s rdfs:label ?o 
-            filter(langMatches(lang(?o),"fr"))
+SELECT ?dataset_uri ?label  where {           
+    ?dataset_uri a qb:DataSet .
+    OPTIONAL{ 
+        ?dataset_uri rdfs:label ?label 
+        filter(langMatches(lang(?label),"fr"))
     }
 }
