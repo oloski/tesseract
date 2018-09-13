@@ -1,4 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
+import pandas as pd
 
 # TODO cache ?
 
@@ -34,6 +35,12 @@ def query_datasets():
 
     return [ {"label": label_modif(row), "value": label_modif(row)} for row in json["results"]["bindings"] ] 
 
+def queryToDataFrame(results):
+    results_value=results['results']['bindings']
+    table=pd.DataFrame([[x[name]['value'] for x in results_value]  for name in list(results_value[0].keys())]).T
+    table.columns=list(results_value[0].keys())
+    return table
+
 def query_dimensions():
     
     URL="http://hackathon2018.ontotext.com/repositories/plosh"
@@ -59,11 +66,8 @@ def query_dimensions():
 
     sparql.setQuery(query)
     results = sparql.query().convert()
-
-    results=results['results']['bindings']
-    keys=list(results[0].keys())  
-    
-    return [{'label': result[keys[1]]['value'], 'value': result[keys[0]]['value']} for result in results]
+   
+    return queryToDataFrame(results)
     
 def query_measures():
     
@@ -76,11 +80,11 @@ def query_measures():
     PREFIX mes: <http://id.insee.fr/meta/mesure/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
 
-    SELECT ?mesure ?label where {           
+    SELECT ?measure ?label where {           
         ?s a qb:DataSet.
         ?s qb:structure ?dsd.
-        ?dsd qb:component/qb:measure ?mesure .
-        ?mesure rdfs:label ?labelfr
+        ?dsd qb:component/qb:measure ?measure .
+        ?measure rdfs:label ?labelfr
 
         filter(langMatches(lang(?labelfr),"fr"))
         BIND(IF(BOUND(?labelfr), ?labelfr,"NO LABEL !!!"@fr) AS ?label)
@@ -90,7 +94,4 @@ def query_measures():
     sparql.setQuery(query)
     results = sparql.query().convert()
 
-    results=results['results']['bindings']
-    keys=list(results[0].keys())  
-    
-    return [{'label': result[keys[1]]['value'], 'value': result[keys[0]]['value']} for result in results]
+    return queryToDataFrame(results)
