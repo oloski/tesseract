@@ -1,0 +1,28 @@
+PREFIX qb: <http://purl.org/linked-data/cube#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# List of dimensions in cubes
+
+# Replace ?graph with the URI of the graph if you want to query a specific graph instead of the whole repository
+# Replace ?datacube with the URI of the datacube if you want to query a specific cube instead of the whole repository
+# Replace fr with the language of your labels, or comment out the language lines
+
+select ?dimensionLabel ?dimension ?datacubeLabel ?datacube
+where {
+    graph ?graph {
+        ?datacube a qb:DataSet ;
+                  rdfs:label|dct:title ?datacubeLabel ;
+                  qb:structure/qb:component/qb:dimension ?dimension .
+        optional {
+            ?dimension rdfs:label ?dimensionLabel .
+            filter (lang(?dimensionLabel) = "fr")
+       }
+       filter
+        ((lang(?datacubeLabel) = "fr")
+        &&
+            (str(?datacubeLabel) = "sbs_r2")  )
+    }
+}
+order by ?dimension
+limit 100
