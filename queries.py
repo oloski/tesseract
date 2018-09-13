@@ -95,3 +95,41 @@ def query_measures():
     results = sparql.query().convert()
 
     return queryToDataFrame(results)
+
+
+
+def query_dimensions_olo(cube_label):
+    
+    URL="http://hackathon2018.ontotext.com/repositories/plosh"
+    sparql = SPARQLWrapper(URL)
+    sparql.setReturnFormat(JSON)
+    
+     query = """
+     PREFIX qb: <http://purl.org/linked-data/cube#>
+     PREFIX dct: <http://purl.org/dc/terms/>
+     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+     select ?dimensionLabel 
+     where {
+     graph ?graph {
+        ?datacube a qb:DataSet ;
+                  rdfs:label|dct:title ?datacubeLabel ;
+                  qb:structure/qb:component/qb:dimension ?dimension .
+        optional {
+            ?dimension rdfs:label ?dimensionLabel .
+            filter (lang(?dimensionLabel) = "fr")
+       }
+       filter
+        ((lang(?datacubeLabel) = "fr")
+        &&
+            (str(?datacubeLabel) = """+ cube_label +""")  )
+     }
+    }
+    order by ?dimension
+    limit 100
+    """
+
+    sparql.setQuery(query)
+    results = sparql.query().convert()
+   
+    return queryToDataFrame(results)
