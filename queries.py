@@ -65,7 +65,7 @@ def query_datasets():
             return row["dataset_uri"]["value"]
 
     return [ {"label": label_modif(row), "value": label_modif(row)} for row in json["results"]["bindings"] ] 
- 
+
 def query_dimensions():
     
     URL="http://hackathon2018.ontotext.com/repositories/plosh"
