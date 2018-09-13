@@ -97,3 +97,32 @@ def query_dimensions():
     
     return [{'label': result[keys[1]]['value'], 'value': result[keys[0]]['value']} for result in results]
     
+def query_mesures():
+    
+    sparql = SPARQLWrapper("http://hackathon2018.ontotext.com/repositories/plosh")
+    sparql.setReturnFormat(JSON)
+    
+    query = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX qb: <http://purl.org/linked-data/cube#>
+    PREFIX mes: <http://id.insee.fr/meta/mesure/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+
+    SELECT ?mesure ?label where {           
+        ?s a qb:DataSet.
+        ?s qb:structure ?dsd.
+        ?dsd qb:component/qb:measure ?mesure .
+        ?mesure rdfs:label ?labelfr
+
+        filter(langMatches(lang(?labelfr),"fr"))
+        BIND(IF(BOUND(?labelfr), ?labelfr,"NO LABEL !!!"@fr) AS ?label)
+    } LIMIT 100
+    """
+
+    sparql.setQuery(query)
+    results = sparql.query().convert()
+
+    results=results['results']['bindings']
+    keys=list(results[0].keys())  
+    
+    return [{'label': result[keys[1]]['value'], 'value': result[keys[0]]['value']} for result in results]
