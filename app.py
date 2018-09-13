@@ -52,10 +52,18 @@ def update_output_div(input_value):
 )
 def get_dimensions_or_measures(input_value):
     if (input_value == "dimensions"):
-        
-        dimensions = queries.query_dimension_olo(cube)
         # TODO use the request
-        return html.Table ([html.Tr([html.Td("yo")]) for row in dimensions])
+        # getting dimensions
+        dimensions = queries.query_dimension_olo(cube)
+        return html.Table(
+        # Header
+          [html.Tr([html.Th(col) for col in df.columns])] +
+
+        # Body
+           [html.Tr([
+            html.Td(df.iloc[i][col]) for col in df.columns
+           ]) for i in range(min(len(df), max_rows))], className='table table-hover table-dark'
+    )
     elif (input_value == "measures"):
         return html.Table ([html.Tr([html.Td("test")]) for row in range(10)])
     else:
