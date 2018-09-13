@@ -5,6 +5,8 @@ from dash.dependencies import Input, Output
 
 from queries import  query_datasets
 
+
+
 app = dash.Dash()
 
 app.layout = html.Div([
@@ -50,8 +52,10 @@ def update_output_div(input_value):
 )
 def get_dimensions_or_measures(input_value):
     if (input_value == "dimensions"):
+        
+        dimensions = queries.query_dimension_olo(cube)
         # TODO use the request
-        return html.Table ([html.Tr([html.Td("yo")]) for row in range(10)])
+        return html.Table ([html.Tr([html.Td("yo")]) for row in dimensions])
     elif (input_value == "measures"):
         return html.Table ([html.Tr([html.Td("test")]) for row in range(10)])
     else:
